@@ -63,7 +63,7 @@
             modelEntity.setAttribute('scale', scale);
 
             // Z軸だけを距離に基づいて調整
-            const zPosition = -distance / 2; // 距離に応じてZ軸の値を調整
+            const zPosition = -distance / 100; // 距離に応じてZ軸の値を調整
             const position = `0 0 ${zPosition}`;
             modelEntity.setAttribute('position', position);
         }
