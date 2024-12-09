@@ -11,7 +11,7 @@
         "name": "新発田市役所_市章",
         "latitude": 37.94781383890853,
         "longitude": 139.32706387291938,
-        "modelUrl": "https://github.com/ei-pc10/20241101_model/raw/refs/heads/main/shibata_logo.glb",
+        "modelUrl": "https://raw.githubusercontent.com/ei-pc10/20241101_model/main/shibata_logo.glb",
         "scale": "1 1 1",
         "position": "0 0 -5"
     },
