@@ -51,6 +51,23 @@
             return R * c;
         }
 
+        // 距離に基づいてスケールと位置を調整する関数
+        function adjustPositionAndScale(distance, modelEntity) {
+            const maxScale = 3;
+            const minScale = 0.2;
+            const maxDistance = 2000;
+            
+            // 距離に応じてスケールを変化させる
+            const scaleFactor = Math.max(minScale, Math.min(maxScale, 1 + (distance / maxDistance)));
+            const scale = `${scaleFactor} ${scaleFactor} ${scaleFactor}`;
+            modelEntity.setAttribute('scale', scale);
+
+            // Z軸だけを距離に基づいて調整
+            const zPosition = -distance / 2; // 距離に応じてZ軸の値を調整
+            const position = `0 0 ${zPosition}`;
+            modelEntity.setAttribute('position', position);
+        }
+
         if ("geolocation" in navigator) {
             navigator.geolocation.watchPosition(
                 async (position) => {
@@ -70,6 +87,10 @@
                             modelEntity.setAttribute('gps-entity-place', `latitude: ${location.latitude}; longitude: ${location.longitude}`);
                             modelEntity.setAttribute('scale', location.scale);
                             modelEntity.setAttribute('position', location.position);
+
+                            // 距離に基づいて位置とスケールを調整
+                            adjustPositionAndScale(distance, modelEntity);
+
                             scene.appendChild(modelEntity);
                         }
                         allLocationsHTML += `<strong>${location.name}</strong> - 距離: ${distance.toFixed(1)}m<br>`;
