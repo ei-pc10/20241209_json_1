@@ -64,7 +64,7 @@
 
                     locations.forEach(location => {
                         const distance = calculateDistance(userLatitude, userLongitude, location.latitude, location.longitude);
-                        if (distance <= 1000) {
+                        if (distance <= 2000) {
                             const modelEntity = document.createElement('a-entity');
                             modelEntity.setAttribute('gltf-model', location.modelUrl);
                             modelEntity.setAttribute('gps-entity-place', `latitude: ${location.latitude}; longitude: ${location.longitude}`);
