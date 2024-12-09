@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Location-based AR.js Demo</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <style>
+        #locationDisplay {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <div id="locationDisplay">位置情報を取得中...</div>
+
+    <a-scene vr-mode-ui="enabled: false" embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    </a-scene>
+
+    <script>
+        const locationDisplay = document.getElementById('locationDisplay');
+        const scene = document.querySelector('a-scene');
+        const R = 6371000;
+
+        async function fetchLocations() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) throw new Error("JSONファイルが見つかりません");
+                return await response.json();
+            } catch (error) {
+                console.error("JSONデータの取得に失敗:", error.message);
+                locationDisplay.innerHTML = "データの取得に失敗しました。";
+                return [];
+            }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(
+                async (position) => {
+                    const userLatitude = position.coords.latitude;
+                    const userLongitude = position.coords.longitude;
+
+                    const locations = await fetchLocations();
+                    if (!locations.length) return;
+
+                    let allLocationsHTML = '';
+
+                    locations.forEach(location => {
+                        const distance = calculateDistance(userLatitude, userLongitude, location.latitude, location.longitude);
+                        if (distance <= 1000) {
+                            const modelEntity = document.createElement('a-entity');
+                            modelEntity.setAttribute('gltf-model', location.modelUrl);
+                            modelEntity.setAttribute('gps-entity-place', `latitude: ${location.latitude}; longitude: ${location.longitude}`);
+                            modelEntity.setAttribute('scale', location.scale);
+                            modelEntity.setAttribute('position', location.position);
+                            scene.appendChild(modelEntity);
+                        }
+                        allLocationsHTML += `<strong>${location.name}</strong> - 距離: ${distance.toFixed(1)}m<br>`;
+                    });
+
+                    locationDisplay.innerHTML = allLocationsHTML;
+                },
+                (error) => {
+                    console.error("位置情報の取得に失敗:", error.message);
+                    locationDisplay.innerHTML = "位置情報の取得に失敗しました。";
+                },
+                { enableHighAccuracy: true, maximumAge: 3000, timeout: 5000 }
+            );
+        } else {
+            console.error("このブラウザは位置情報をサポートしていません。");
+            locationDisplay.innerHTML = "位置情報がサポートされていません。";
+        }
+    </script>
+</body>
+</html>
