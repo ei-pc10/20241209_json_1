@@ -3,7 +3,7 @@
         "name": "こったまーや_トマト",
         "latitude": 37.95848577971992,
         "longitude": 139.3427023985967,
-        "modelUrl": "https://raw.githubusercontent.com/ei-pc10/hitomania_3d/main/tomato.glb",
+        "modelUrl": "https://github.com/ei-pc10/20241101_model/raw/refs/heads/main/tomato.glb",
         "scale": "0.7 0.7 0.7",
         "position": "0 -1 -3"
     }
