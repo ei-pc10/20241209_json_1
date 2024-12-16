@@ -84,8 +84,10 @@
                             modelEntity.setAttribute('gltf-model', location.modelUrl);
                             modelEntity.setAttribute('gps-entity-place', `latitude: ${location.latitude}; longitude: ${location.longitude}`);
 
-                            // 距離に基づいてスケールと位置を個別に調整
-                            adjustPositionAndScale(distance, modelEntity);
+                            // イベントリスナーを追加してスケールと位置を更新
+                            modelEntity.addEventListener('gps-entity-place-update-position', () => {
+                                adjustPositionAndScale(distance, modelEntity);
+                            });
 
                             // シーンにモデルを追加
                             scene.appendChild(modelEntity);
