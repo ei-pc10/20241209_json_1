@@ -29,7 +29,7 @@
     <script>
         const locationDisplay = document.getElementById('locationDisplay');
         const scene = document.querySelector('a-scene');
-        const R = 6371000;
+        const R = 6371000; // 地球の半径（メートル）
 
         async function fetchLocations() {
             try {
@@ -86,14 +86,22 @@
                             modelEntity.setAttribute('gltf-model', location.modelUrl);
                             modelEntity.setAttribute('gps-entity-place', `latitude: ${location.latitude}; longitude: ${location.longitude}`);
 
-                            // スケールと位置の設定
-                            modelEntity.setAttribute('scale', scale);
-                            modelEntity.setAttribute('position', position);
+                            // モデルがロードされた後にスケールと位置を設定
+                            modelEntity.addEventListener('model-loaded', () => {
+                                modelEntity.setAttribute('scale', scale);
+                                modelEntity.setAttribute('position', position);
+                            });
+
+                            // バックアップとして再設定処理
+                            setTimeout(() => {
+                                modelEntity.setAttribute('scale', scale);
+                                modelEntity.setAttribute('position', position);
+                            }, 100);
 
                             // シーンにモデルを追加
                             scene.appendChild(modelEntity);
 
-                            // ユーザーへの表示情報を更新 (スケールと位置を含む)
+                            // ユーザーへの表示情報を更新
                             allLocationsHTML += `
                                 <strong>${location.name}</strong> - 
                                 距離: ${distance.toFixed(1)}m, 
