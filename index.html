@@ -51,7 +51,7 @@
             return R * c;
         }
 
-        function adjustPositionAndScale(distance, modelEntity) {
+        function adjustPositionAndScale(distance) {
             const scale_array = [0.3, 0.35, 0.40, 0.70, 1.3, 2.0, 3.5, 5.0, 6.5, 7.5, 8.5, 9.0, 9.5, 10.0, 10.5, 11.1, 30, 60, 70, 100];
             const position_array = [5, 10, 12, 17, 20, 23, 30, 35, 40, 75, 90, 150, 170, 200, 240, 270, 320, 350, 400, 500];
 
@@ -59,11 +59,11 @@
 
             const scaleFactor = scale_array[index];
             const scale = `${scaleFactor} ${scaleFactor} ${scaleFactor}`;
-            modelEntity.setAttribute('scale', scale);
 
             const zPosition = position_array[index];
             const position = `0 0 ${zPosition}`;
-            modelEntity.setAttribute('position', position);
+
+            return { scale, position };
         }
 
         if ("geolocation" in navigator) {
@@ -80,20 +80,25 @@
                     locations.forEach(location => {
                         const distance = calculateDistance(userLatitude, userLongitude, location.latitude, location.longitude);
                         if (distance <= 2000) {
+                            const { scale, position } = adjustPositionAndScale(distance);
+
                             const modelEntity = document.createElement('a-entity');
                             modelEntity.setAttribute('gltf-model', location.modelUrl);
                             modelEntity.setAttribute('gps-entity-place', `latitude: ${location.latitude}; longitude: ${location.longitude}`);
 
-                            // イベントリスナーを追加してスケールと位置を更新
-                            modelEntity.addEventListener('gps-entity-place-update-position', () => {
-                                adjustPositionAndScale(distance, modelEntity);
-                            });
+                            // スケールと位置の設定
+                            modelEntity.setAttribute('scale', scale);
+                            modelEntity.setAttribute('position', position);
 
                             // シーンにモデルを追加
                             scene.appendChild(modelEntity);
 
-                            // ユーザーへの表示情報を更新
-                            allLocationsHTML += `<strong>${location.name}</strong> - 距離: ${distance.toFixed(1)}m<br>`;
+                            // ユーザーへの表示情報を更新 (スケールと位置を含む)
+                            allLocationsHTML += `
+                                <strong>${location.name}</strong> - 
+                                距離: ${distance.toFixed(1)}m, 
+                                スケール: ${scale}, 
+                                位置: ${position}<br>`;
                         }
                     });
 
