@@ -85,7 +85,7 @@
 
                             const modelEntity = document.createElement('a-entity');
                             modelEntity.setAttribute('gltf-model', location.modelUrl);
-                            modelEntity.setAttribute('gps-entity-place', `latitude: ${location.latitude}; longitude: ${location.longitude}`);
+                            modelEntity.setAttribute('gps-entity-place', `latitude: ${location.latitude}; longitude: ${location.longitude}`); // 目的地の緯度経度を設定
                             modelEntity.setAttribute('look-at', '[gps-camera]'); // カメラに向くよう設定
 
                             // モデルがロードされた後にスケールと位置を設定
